@@ -37,6 +37,22 @@ const authPersistConfig = {
   whitelist: ['token'],
 };
 
+const stateReset = state => {
+  state.token = null;
+  state.isLoading = false;
+  state.isAuth = false;
+  state.user = {
+    name: '',
+    email: '',
+    avatarURL: '',
+    city: '',
+    birthday: '',
+    phone: '',
+    pets: [],
+    favoriteNotices: [],
+  };
+};
+
 const handlePending = state => {
   state.isLoading = true;
   state.error = null;
@@ -45,6 +61,9 @@ const handlePending = state => {
 const handleRejected = (state, { payload }) => {
   state.isLoading = false;
   state.error = payload;
+  if (payload === 'Request failed with status code 401') {
+    stateReset(state);
+  }
 };
 
 const authSlice = createSlice({
@@ -76,19 +95,7 @@ const authSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(logout.fulfilled, state => {
-        state.token = null;
-        state.isLoading = false;
-        state.isAuth = false;
-        state.user = {
-          name: '',
-          email: '',
-          avatarURL: '',
-          city: '',
-          birthday: '',
-          phone: '',
-          pets: [],
-          favoriteNotices: [],
-        };
+        stateReset(state);
       })
       .addCase(fetchCurrentUser.pending, state => {
         state.isLoading = true;
