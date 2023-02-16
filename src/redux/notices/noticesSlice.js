@@ -37,7 +37,6 @@ const noticesSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(fetchNotices.rejected, handleRejected)
-
       // отримання одного оголошення
       .addCase(fetchOneNotice.pending, handlePending)
       .addCase(fetchOneNotice.fulfilled, (state, { payload }) => {
@@ -45,7 +44,6 @@ const noticesSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(fetchOneNotice.rejected, handleRejected)
-
       // додавання оголошень відповідно до обраної категорії
       .addCase(addNotice.pending, handlePending)
       .addCase(addNotice.fulfilled, (state, { payload }) => {
@@ -54,7 +52,6 @@ const noticesSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(addNotice.rejected, handleRejected)
-
       // видалення оголошення авторизованого користувача створеного цим же користувачем
       .addCase(deleteNotice.pending, handlePending)
       .addCase(deleteNotice.fulfilled, (state, { payload }) => {
