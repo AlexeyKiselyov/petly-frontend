@@ -42,7 +42,7 @@ import {
   CATEGORIES_NOTICES,
 } from '../../helpers/constants';
 
-export const NoticeCategoryItem = ({ data, route }) => {
+export const NoticeCategoryItem = ({ data, route, lastBookElementRef }) => {
   const {
     _id,
     title,
@@ -59,7 +59,8 @@ export const NoticeCategoryItem = ({ data, route }) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isShownAlert, setIsShownAlert] = useState(false);
-  const [isShownConfirmationDelete, setIsShownConfirmationDelete] = useState(false);
+  const [isShownConfirmationDelete, setIsShownConfirmationDelete] =
+    useState(false);
 
   const currentUser = useSelector(selectUser);
   const isAuth = useSelector(selectIsAuth);
@@ -76,8 +77,8 @@ export const NoticeCategoryItem = ({ data, route }) => {
         dispatch(changeFavotitesNotices(_id));
       }
     } else {
-      setIsShownAlert(true)
-    };
+      setIsShownAlert(true);
+    }
   };
 
   const deletePet = () => {
@@ -105,13 +106,11 @@ export const NoticeCategoryItem = ({ data, route }) => {
 
   return (
     <>
-      <Item>
+      <Item ref={lastBookElementRef}>
         <ImgWrap>
           <CategoryLabel>{CATEGORIES_NOTICES[category]}</CategoryLabel>
           <Img src={imgURL} alt={name} loading="lazy" />
-          <FavoriteBtn
-            favorite={isFavorite}
-            onClick={onChangeFavorite} />
+          <FavoriteBtn favorite={isFavorite} onClick={onChangeFavorite} />
         </ImgWrap>
         <Wrap>
           <WrapInner>
@@ -139,24 +138,30 @@ export const NoticeCategoryItem = ({ data, route }) => {
           </ThumbBtn>
         </Wrap>
       </Item>
-      {isModalOpen && !isLoading &&
+      {isModalOpen && !isLoading && (
         <ModalNotice
           onClose={closeModal}
           data={dataDetail}
           isFavorite={isFavorite}
-          onClickFavorite={onChangeFavorite} />}
-      {isShownAlert && !isAuth &&
+          onClickFavorite={onChangeFavorite}
+        />
+      )}
+      {isShownAlert && !isAuth && (
         <WarningMessage
           onClose={closeAlert}
           type="auth"
           title="Unauthorized"
-          text={MUST_AUTHORIZED_TO_FAVORITES} />}
-      {isShownConfirmationDelete &&
+          text={MUST_AUTHORIZED_TO_FAVORITES}
+        />
+      )}
+      {isShownConfirmationDelete && (
         <WarningMessage
           onClose={closeConfirmationDelete}
           type="approve"
           text={CONFIRMATION_DELETE}
-          approveFunk={deletePet} />}
+          approveFunk={deletePet}
+        />
+      )}
     </>
-  )
+  );
 };
