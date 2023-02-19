@@ -106,38 +106,73 @@ export const NoticeCategoryItem = ({ data, route, lastBookElementRef }) => {
 
   return (
     <>
-      <Item ref={lastBookElementRef}>
-        <ImgWrap>
-          <CategoryLabel>{CATEGORIES_NOTICES[category]}</CategoryLabel>
-          <Img src={imgURL} alt={name} loading="lazy" />
-          <FavoriteBtn favorite={isFavorite} onClick={onChangeFavorite} />
-        </ImgWrap>
-        <Wrap>
-          <WrapInner>
-            <Title>{title}</Title>
-            <Ul>
-              <Li key={`${_id}+breed`}>
-                <Lable>Breed:</Lable>
-                <Text>{breed}</Text>
-              </Li>
-              <Li key={`${_id}+place`}>
-                <Lable>Place:</Lable>
-                <Text>{location}</Text>
-              </Li>
-              <Li key={`${_id}+age`}>
-                <Lable>Age:</Lable>
-                <Text>{age}</Text>
-              </Li>
-            </Ul>
-          </WrapInner>
-          <ThumbBtn>
-            <LearnMoreBtn onClick={openModal} />
-            {currentUser.email === owner.email && (
-              <DeletePetNoticesBtn onClick={closeConfirmationDelete} />
-            )}
-          </ThumbBtn>
-        </Wrap>
-      </Item>
+      {lastBookElementRef ? (
+        <Item ref={lastBookElementRef}>
+          <ImgWrap>
+            <CategoryLabel>{CATEGORIES_NOTICES[category]}</CategoryLabel>
+            <Img src={imgURL} alt={name} loading="lazy" />
+            <FavoriteBtn favorite={isFavorite} onClick={onChangeFavorite} />
+          </ImgWrap>
+          <Wrap>
+            <WrapInner>
+              <Title>{title}</Title>
+              <Ul>
+                <Li key={`${_id}+breed`}>
+                  <Lable>Breed:</Lable>
+                  <Text>{breed}</Text>
+                </Li>
+                <Li key={`${_id}+place`}>
+                  <Lable>Place:</Lable>
+                  <Text>{location}</Text>
+                </Li>
+                <Li key={`${_id}+age`}>
+                  <Lable>Age:</Lable>
+                  <Text>{age}</Text>
+                </Li>
+              </Ul>
+            </WrapInner>
+            <ThumbBtn>
+              <LearnMoreBtn onClick={openModal} />
+              {currentUser.email === owner.email && (
+                <DeletePetNoticesBtn onClick={closeConfirmationDelete} />
+              )}
+            </ThumbBtn>
+          </Wrap>
+        </Item>
+      ) : (
+        <Item>
+          <ImgWrap>
+            <CategoryLabel>{CATEGORIES_NOTICES[category]}</CategoryLabel>
+            <Img src={imgURL} alt={name} loading="lazy" />
+            <FavoriteBtn favorite={isFavorite} onClick={onChangeFavorite} />
+          </ImgWrap>
+          <Wrap>
+            <WrapInner>
+              <Title>{title}</Title>
+              <Ul>
+                <Li key={`${_id}+breed`}>
+                  <Lable>Breed:</Lable>
+                  <Text>{breed}</Text>
+                </Li>
+                <Li key={`${_id}+place`}>
+                  <Lable>Place:</Lable>
+                  <Text>{location}</Text>
+                </Li>
+                <Li key={`${_id}+age`}>
+                  <Lable>Age:</Lable>
+                  <Text>{age}</Text>
+                </Li>
+              </Ul>
+            </WrapInner>
+            <ThumbBtn>
+              <LearnMoreBtn onClick={openModal} />
+              {currentUser.email === owner.email && (
+                <DeletePetNoticesBtn onClick={closeConfirmationDelete} />
+              )}
+            </ThumbBtn>
+          </Wrap>
+        </Item>
+      )}
       {isModalOpen && !isLoading && (
         <ModalNotice
           onClose={closeModal}

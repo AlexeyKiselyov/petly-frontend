@@ -15,7 +15,10 @@ export const NoticesCategoriesList = ({ data, route, lastBookElementRef }) => {
               route === 'favorite'
           )
           .map((item, idx) => {
-            if (data.length === idx) {
+            if (data.length === idx + 1) {
+              // console.log(data.length);
+              // console.log(idx);
+              // console.log('last one');
               return (
                 <NoticeCategoryItem
                   key={item._id}
@@ -30,7 +33,7 @@ export const NoticesCategoriesList = ({ data, route, lastBookElementRef }) => {
                   key={item._id}
                   data={item}
                   route={route}
-                  lastBookElementRef={lastBookElementRef}
+                  lastBookElementRef={null}
                 />
               );
             }

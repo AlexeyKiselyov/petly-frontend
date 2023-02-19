@@ -39,7 +39,7 @@ const NoticesPage = () => {
   const [hasMore, setHasMore] = useState(false);
   const [pageNumber, setPageNumber] = useState(1);
   const [notices, setNotices] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // const notices = useSelector(selectNotices);
@@ -47,15 +47,17 @@ const NoticesPage = () => {
   const isAuth = useSelector(selectIsAuth);
 
   useEffect(() => {
+    console.log("use eff");
     setNotices([]);
     setPageNumber(1);
     setHasMore(false);
   }, [route, searchTitleQwery]);
 
   useEffect(() => {
+    setIsLoading(true);
+    setError(false);
     if (searchTitleQwery !== '') {
       // dispatch(fetchNotices({ category: route, qwery: searchTitleQwery }));
-      setIsLoading(true);
       axios(
         `/notices/${route}?page=${pageNumber}&limit=${8}&qwery=${searchTitleQwery}`
       )
@@ -66,30 +68,41 @@ const NoticesPage = () => {
         .finally(() => setIsLoading(false));
     } else {
       setIsLoading(true);
-      axios(`/notices/${route}?page=${pageNumber}&limit=${4}`)
+      axios(`/notices/${route}?page=${pageNumber}&limit=${8}`)
         .then(res => {
-          setNotices(prev => [...prev, ...res.data.notices]);
-					setHasMore(res.data.notices.length > 0)
+          setNotices(prev => {
+            console.log(prev);
+            console.log(res.data);
+
+            return [...prev, ...res.data.notices];
+          });
+          setHasMore(res.data.notices.length > 0);
+          setIsLoading(false);
+          console.log(notices);
         })
         .catch(err => setError(err.message))
-        .finally(() => setIsLoading(false));
+        // .finally(() => {
+        // });
     }
-    return () => setNotices([]);
+    // return () => setNotices([]);
   }, [route, searchTitleQwery, pageNumber]);
 
-	const observer = useRef()
-  const lastBookElementRef = useCallback(node => {
-		console.log(node);
-    if (isLoading) return
-    if (observer.current) observer.current.disconnect()
-    observer.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasMore) {
-        setPageNumber(prevPageNumber => prevPageNumber + 1)
-				console.log("Page+1");
-      }
-    })
-    if (node) observer.current.observe(node)
-  }, [isLoading, hasMore]) 
+  const observer = useRef();
+  const lastBookElementRef = useCallback(
+    node => {
+      // console.log(node);
+      if (isLoading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting && hasMore) {
+          setPageNumber(prevPageNumber => prevPageNumber + 1);
+          console.log('Page+1');
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [isLoading, hasMore]
+  );
 
   const closeModal = () => {
     setIsModalOpen(!isModalOpen);
@@ -110,7 +123,11 @@ const NoticesPage = () => {
             <AddNoticeButton onClick={closeModal} />
           </MenuWrap>
           {notices?.length > 0 ? (
-            <NoticesCategoriesList route={route} data={notices} lastBookElementRef={lastBookElementRef}/>
+            <NoticesCategoriesList
+              route={route}
+              data={notices}
+              lastBookElementRef={lastBookElementRef}
+            />
           ) : (
             !isLoading && <Notification message={NOT_FOUND} />
           )}
