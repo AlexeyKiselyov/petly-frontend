@@ -2,12 +2,11 @@ import { NoticeCategoryItem } from '../../components/NoticeCategoryItem/NoticeCa
 import { ScrollUpBtn } from '../CommonButtons/ScrollUpBtn/ScrollUpBtn';
 import { List } from './NoticesCategoriesList.styled';
 
-export const NoticesCategoriesList = ({ data, route, lastBookElementRef }) => {
+export const NoticesCategoriesList = ({ data, route, reference }) => {
   return (
     <>
       <List>
-        {[...data]
-          .reverse()
+        {data
           .filter(
             item =>
               item.category === route ||
@@ -16,15 +15,12 @@ export const NoticesCategoriesList = ({ data, route, lastBookElementRef }) => {
           )
           .map((item, idx) => {
             if (data.length === idx + 1) {
-              // console.log(data.length);
-              // console.log(idx);
-              // console.log('last one');
               return (
                 <NoticeCategoryItem
                   key={item._id}
                   data={item}
                   route={route}
-                  lastBookElementRef={lastBookElementRef}
+                  reference={reference}
                 />
               );
             } else {
@@ -38,7 +34,8 @@ export const NoticesCategoriesList = ({ data, route, lastBookElementRef }) => {
               );
             }
           })}
-      </List>
+      </List>     
+
       <ScrollUpBtn />
     </>
   );

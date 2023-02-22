@@ -42,7 +42,7 @@ import {
   CATEGORIES_NOTICES,
 } from '../../helpers/constants';
 
-export const NoticeCategoryItem = ({ data, route, lastBookElementRef }) => {
+export const NoticeCategoryItem = ({ data, route, reference }) => {
   const {
     _id,
     title,
@@ -106,8 +106,8 @@ export const NoticeCategoryItem = ({ data, route, lastBookElementRef }) => {
 
   return (
     <>
-      {lastBookElementRef ? (
-        <Item ref={lastBookElementRef}>
+      {reference ? (
+        <Item ref={reference}>
           <ImgWrap>
             <CategoryLabel>{CATEGORIES_NOTICES[category]}</CategoryLabel>
             <Img src={imgURL} alt={name} loading="lazy" />

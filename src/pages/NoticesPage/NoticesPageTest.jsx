@@ -28,7 +28,6 @@ import { MenuWrap } from './NoticesPage.styled';
 import axios from 'axios';
 import { useRef } from 'react';
 import { useCallback } from 'react';
-import { useInView } from 'react-intersection-observer';
 
 // ================================================================
 const NoticesPage = () => {
@@ -40,27 +39,25 @@ const NoticesPage = () => {
   const [hasMore, setHasMore] = useState(false);
   const [pageNumber, setPageNumber] = useState(1);
   const [notices, setNotices] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // const notices = useSelector(selectNotices);
+  // const isLoading = useSelector(selectNoticesIsLoading);
   const isAuth = useSelector(selectIsAuth);
 
-  const { ref, inView } = useInView({
-    /* Optional options */
-    threshold: 0.5,
-    triggerOnce: true,
-  });
-
   useEffect(() => {
-    console.log('use eff');
+    console.log("use eff");
     setNotices([]);
     setPageNumber(1);
     setHasMore(false);
   }, [route, searchTitleQwery]);
 
   useEffect(() => {
+    setIsLoading(true);
     setError(false);
     if (searchTitleQwery !== '') {
+      // dispatch(fetchNotices({ category: route, qwery: searchTitleQwery }));
       axios(
         `/notices/${route}?page=${pageNumber}&limit=${8}&qwery=${searchTitleQwery}`
       )
@@ -74,21 +71,38 @@ const NoticesPage = () => {
       axios(`/notices/${route}?page=${pageNumber}&limit=${8}`)
         .then(res => {
           setNotices(prev => {
+            console.log(prev);
+            console.log(res.data);
+
             return [...prev, ...res.data.notices];
           });
           setHasMore(res.data.notices.length > 0);
+          setIsLoading(false);
+          console.log(notices);
         })
         .catch(err => setError(err.message))
-        .finally(() => {
-          setIsLoading(false);
-        });
+        // .finally(() => {
+        // });
     }
+    // return () => setNotices([]);
   }, [route, searchTitleQwery, pageNumber]);
 
-  useEffect(() => {
-    if (!inView) return;
-    setPageNumber(prevPageNumber => prevPageNumber + 1);
-  }, [inView]);
+  const observer = useRef();
+  const lastBookElementRef = useCallback(
+    node => {
+      // console.log(node);
+      if (isLoading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting && hasMore) {
+          setPageNumber(prevPageNumber => prevPageNumber + 1);
+          console.log('Page+1');
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [isLoading, hasMore]
+  );
 
   const closeModal = () => {
     setIsModalOpen(!isModalOpen);
@@ -112,13 +126,11 @@ const NoticesPage = () => {
             <NoticesCategoriesList
               route={route}
               data={notices}
-              reference={ref}
-              hasMore={hasMore}
+              lastBookElementRef={lastBookElementRef}
             />
           ) : (
             !isLoading && <Notification message={NOT_FOUND} />
           )}
-          {!hasMore && <p>No more data...</p>}
         </>
         {isModalOpen && isAuth && <ModalAddNotice onClose={closeModal} />}
         {isModalOpen && !isAuth && (
