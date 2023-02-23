@@ -26,8 +26,7 @@ import { NOT_FOUND } from '../../helpers/constants';
 
 import { MenuWrap } from './NoticesPage.styled';
 import axios from 'axios';
-import { useRef } from 'react';
-import { useCallback } from 'react';
+
 import { useInView } from 'react-intersection-observer';
 
 // ================================================================
@@ -37,7 +36,7 @@ const NoticesPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [searchTitleQwery, setSearchTitleQwery] = useState('');
-  const [hasMore, setHasMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [pageNumber, setPageNumber] = useState(1);
   const [notices, setNotices] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -52,37 +51,29 @@ const NoticesPage = () => {
   });
 
   useEffect(() => {
-    console.log('use eff');
     setNotices([]);
     setPageNumber(1);
-    setHasMore(false);
+    setHasMore(true);
   }, [route, searchTitleQwery]);
 
-  useEffect(() => {
-    setError(false);
-    if (searchTitleQwery !== '') {
-      axios(
-        `/notices/${route}?page=${pageNumber}&limit=${8}&qwery=${searchTitleQwery}`
-      )
-        .then(res => {
-          setNotices(prev => [...prev, ...res.data.notices]);
-        })
-        .catch(err => setError(err.message))
-        .finally(() => setIsLoading(false));
-    } else {
-      setIsLoading(true);
-      axios(`/notices/${route}?page=${pageNumber}&limit=${8}`)
-        .then(res => {
-          setNotices(prev => {
-            return [...prev, ...res.data.notices];
-          });
-          setHasMore(res.data.notices.length > 0);
-        })
-        .catch(err => setError(err.message))
-        .finally(() => {
-          setIsLoading(false);
+  useEffect(() => {   
+    setError(false);    
+    setIsLoading(true);
+    axios(
+      `/notices/${route}?page=${pageNumber}&limit=${8}&qwery=${searchTitleQwery}`
+    )
+      .then(res => {
+        setNotices(prev => {
+          return [...prev, ...res.data.notices];
         });
-    }
+        if (res.data.totalPages === pageNumber) {
+          setHasMore(false);
+        }
+      })
+      .catch(err => setError(err.message))
+      .finally(() => {
+        setIsLoading(false);
+      });    
   }, [route, searchTitleQwery, pageNumber]);
 
   useEffect(() => {
@@ -118,7 +109,6 @@ const NoticesPage = () => {
           ) : (
             !isLoading && <Notification message={NOT_FOUND} />
           )}
-          {!hasMore && <p>No more data...</p>}
         </>
         {isModalOpen && isAuth && <ModalAddNotice onClose={closeModal} />}
         {isModalOpen && !isAuth && (

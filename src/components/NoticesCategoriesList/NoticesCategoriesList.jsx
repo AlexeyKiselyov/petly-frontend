@@ -29,7 +29,7 @@ export const NoticesCategoriesList = ({ data, route, reference }) => {
                   key={item._id}
                   data={item}
                   route={route}
-                  lastBookElementRef={null}
+                  reference={null}
                 />
               );
             }
