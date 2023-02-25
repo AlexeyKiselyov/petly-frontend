@@ -81,6 +81,7 @@ export const fetchCurrentUser = createAsyncThunk(
       const { data } = await axios('/users/current');
       return data;
     } catch (error) {
+      token.unset();
       return rejectWithValue(error.message);
     }
   }

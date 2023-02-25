@@ -51,6 +51,7 @@ const stateReset = state => {
     pets: [],
     favoriteNotices: [],
   };
+  state.isFetchingCurrentUser = false;
 };
 
 const handlePending = state => {
@@ -60,6 +61,7 @@ const handlePending = state => {
 
 const handleRejected = (state, { payload }) => {
   state.isLoading = false;
+  state.isFetchingCurrentUser = false;
   state.error = payload;
   if (payload === 'Request failed with status code 401') {
     stateReset(state);
@@ -99,21 +101,16 @@ const authSlice = createSlice({
       })
       .addCase(fetchCurrentUser.pending, state => {
         state.isLoading = true;
-        state.isFetching = true;
+        state.isFetchingCurrentUser = true;
       })
       .addCase(fetchCurrentUser.fulfilled, (state, { payload }) => {
         state.user = payload;
         state.isAuth = true;
 
         state.isLoading = false;
-        state.isFetching = false;
+        state.isFetchingCurrentUser = false;
       })
-      .addCase(fetchCurrentUser.rejected, (state, { payload }) => {
-        state.error = payload;
-        state.isAuth = false;
-        state.isLoading = false;
-        state.isFetching = false;
-      })
+      .addCase(fetchCurrentUser.rejected, handleRejected)
       .addCase(updateUserData.pending, handlePending)
       .addCase(updateUserData.fulfilled, (state, { payload }) => {
         // const index = state.items.findIndex(({ id }) => id === payload.id);
