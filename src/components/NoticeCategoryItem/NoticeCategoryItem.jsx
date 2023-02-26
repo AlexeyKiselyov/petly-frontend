@@ -1,24 +1,22 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+
+import axios from 'axios';
+
 import {
   selectUser,
   selectIsAuth,
   selectFavoriteNotices,
 } from '../../redux/auth/authSelectors';
-import {
-  selectOneNotice,
-  selectNoticesIsLoading,
-} from '../../redux/notices/noticesSelectors';
-import {
-  deleteNotice,
-  fetchOneNotice,
-} from '../../redux/notices/noticesOperations';
-import { changeFavotitesNotices } from '../../redux/notices/noticesSlice';
 import { updateFavoriteNotice } from '../../redux/auth/authOperations';
+
 import { FavoriteBtn } from '../CommonButtons/FavoriteBtn/FavoriteBtn';
 import { LearnMoreBtn } from '../CommonButtons/LearnMoreBtn/LearnMoreBtn';
 import { DeletePetNoticesBtn } from '../CommonButtons/DeletePetNoticesBtn/DeletePetNoticesBtn';
 import { ModalNotice } from './ModalNotice/ModalNotice';
+import { WarningMessage } from '../../components/CommonComponents/WarningMessage/WarningMessage';
+import { Loader } from '../Loader/Loader';
+
 import {
   Item,
   Wrap,
@@ -33,18 +31,17 @@ import {
   Text,
   ThumbBtn,
 } from './NoticeCategoryItem.styled';
+
 import { getAge } from '../../helpers/dateFormat';
-// import { Alert } from '../../components/CommonComponents/Alert/Alert';
-import { WarningMessage } from '../../components/CommonComponents/WarningMessage/WarningMessage';
 import {
   MUST_AUTHORIZED_TO_FAVORITES,
   CONFIRMATION_DELETE,
   CATEGORIES_NOTICES,
 } from '../../helpers/constants';
 
+// =========================================================
 export const NoticeCategoryItem = ({
   data,
-  route,
   reference,
   deleteNotice,
   updateFavorite,
@@ -63,6 +60,9 @@ export const NoticeCategoryItem = ({
 
   const dispatch = useDispatch();
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [oneNotice, setOneNotice] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isShownAlert, setIsShownAlert] = useState(false);
   const [isShownConfirmationDelete, setIsShownConfirmationDelete] =
@@ -71,8 +71,6 @@ export const NoticeCategoryItem = ({
   const currentUser = useSelector(selectUser);
   const isAuth = useSelector(selectIsAuth);
   const favorites = useSelector(selectFavoriteNotices);
-  const dataDetail = useSelector(selectOneNotice);
-  const isLoading = useSelector(selectNoticesIsLoading);
 
   const isFavorite = favorites.includes(_id);
 
@@ -88,9 +86,18 @@ export const NoticeCategoryItem = ({
   const closeModal = () => {
     setIsModalOpen(!isModalOpen);
   };
-
+  
   const openModal = () => {
-    dispatch(fetchOneNotice({ noticeId: _id }));
+    setIsLoading(true);
+    axios(`/notices/notice/${_id}`)
+      .then(result => {
+        setOneNotice(result.data);
+      })
+      .catch(error => setError(error.message))
+      .finally(() => {
+        setIsLoading(false);
+      });
+
     setIsModalOpen(true);
   };
 
@@ -176,7 +183,7 @@ export const NoticeCategoryItem = ({
       {isModalOpen && !isLoading && (
         <ModalNotice
           onClose={closeModal}
-          data={dataDetail}
+          data={oneNotice}
           isFavorite={isFavorite}
           onClickFavorite={onChangeFavorite}
         />
@@ -198,6 +205,7 @@ export const NoticeCategoryItem = ({
           deleteNotice={deleteNotice}
         />
       )}
+      {isLoading && <Loader />}
     </>
   );
 };

@@ -4,7 +4,6 @@ import { List } from './NoticesCategoriesList.styled';
 
 export const NoticesCategoriesList = ({
   data,
-  route,
   reference,
   deleteNotice,
   updateFavorite,
@@ -18,7 +17,6 @@ export const NoticesCategoriesList = ({
               <NoticeCategoryItem
                 key={item._id}
                 data={item}
-                route={route}
                 reference={reference}
                 deleteNotice={deleteNotice}
                 updateFavorite={updateFavorite}
@@ -29,7 +27,6 @@ export const NoticesCategoriesList = ({
               <NoticeCategoryItem
                 key={item._id}
                 data={item}
-                route={route}
                 reference={null}
                 deleteNotice={deleteNotice}
                 updateFavorite={updateFavorite}

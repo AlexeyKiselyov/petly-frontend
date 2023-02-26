@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 import { selectIsAuth } from '../../redux/auth/authSelectors';
@@ -120,6 +120,18 @@ const NoticesPage = () => {
     setNotices(newFavoriteNotices);
   };
 
+  // const getOneNotice = _id => {
+  //   setIsLoading(true);
+  //   axios(`/notices/notice/${_id}`)
+  //     .then(result => {
+  //       setOneNotice(result.data);
+  //     })
+  //     .catch(error => setError(error.message))
+  //     .finally(() => {
+  //       setIsLoading(false);
+  //     });
+  // };
+
   return (
     <Section>
       <Container>
@@ -132,11 +144,10 @@ const NoticesPage = () => {
           </MenuWrap>
           {notices?.length > 0 ? (
             <NoticesCategoriesList
-              route={route}
               data={notices}
               reference={ref}
               deleteNotice={deleteNotice}
-              updateFavorite={updateFavorite}
+              updateFavorite={updateFavorite}             
             />
           ) : (
             !isLoading && <Notification message={NOT_FOUND} />
