@@ -116,6 +116,7 @@ export const Comments = styled.p`
   line-height: calc(19 / 14);
   letter-spacing: 0.04em;
   margin-bottom: 40px;
+  overflow: auto;
 
   color: #000000;
 
