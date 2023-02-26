@@ -7,11 +7,11 @@ export const WarningMessage = ({
   text,
   title,
   type,
-  approveFunk,
+  deleteNotice,
   id,
 }) => {
   const clickHandler = () => {
-    approveFunk(id);
+    deleteNotice(id);
     onClose();
   };
 

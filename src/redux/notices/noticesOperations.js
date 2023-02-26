@@ -40,10 +40,15 @@ export const fetchOneNotice = createAsyncThunk(
 export const addNotice = createAsyncThunk(
   'notices/addNotice',
 
-  async (newNotice, { rejectWithValue }) => {
+  async ({ data: newNotice, route }, { rejectWithValue }) => {
     try {
       const { data } = await axios.post(`/notices`, newNotice);
-      return data;
+      const result = {
+        data,
+        route,
+      };
+      return result;
+      // return data;
     } catch (error) {
       return rejectWithValue(error.message);
     }

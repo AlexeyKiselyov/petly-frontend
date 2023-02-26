@@ -1,32 +1,27 @@
 import { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector} from 'react-redux';
 import { useParams } from 'react-router-dom';
 
-import {
-  selectNotices,
-  selectNoticesIsLoading,
-} from '../../redux/notices/noticesSelectors';
-import { fetchNotices } from '../../redux/notices/noticesOperations';
-import { clearNotices } from '../../redux/notices/noticesSlice';
 import { selectIsAuth } from '../../redux/auth/authSelectors';
 
 import { SectionTitle } from '../../components/CommonComponents/SectionTitle/SectionTitle';
-import { NoticesCategoriesNav } from '../../components/NoticesCategoriesNav/NoticesCategoriesNav';
 import { Section } from '../../components/CommonComponents/Section/Section';
+import { WarningMessage } from '../../components/CommonComponents/WarningMessage/WarningMessage';
 import { Container } from '../../components/CommonComponents/Container/Container';
 import { AddNoticeButton } from '../../components/CommonButtons/AddNoticeButton/AddNoticeButton';
+
+import { NoticesCategoriesNav } from '../../components/NoticesCategoriesNav/NoticesCategoriesNav';
 import { NoticesCategoriesList } from '../../components/NoticesCategoriesList/NoticesCategoriesList';
 import { ModalAddNotice } from '../../components/ModalAddNotice/ModalAddNotice';
 import { NoticesSearch } from '../../components/NoticesSearch/NoticesSearch';
 import { Notification } from '../../components/Notification/Notification';
 import { Loader } from '../../components/Loader/Loader';
-import { WarningMessage } from '../../components/CommonComponents/WarningMessage/WarningMessage';
 
 import { NOT_FOUND } from '../../helpers/constants';
 
 import { MenuWrap } from './NoticesPage.styled';
-import axios from 'axios';
 
+import axios from 'axios';
 import { useInView } from 'react-intersection-observer';
 
 // ================================================================
@@ -56,8 +51,8 @@ const NoticesPage = () => {
     setHasMore(true);
   }, [route, searchTitleQwery]);
 
-  useEffect(() => {   
-    setError(false);    
+  useEffect(() => {
+    setError(false);
     setIsLoading(true);
     axios(
       `/notices/${route}?page=${pageNumber}&limit=${8}&qwery=${searchTitleQwery}`
@@ -70,10 +65,10 @@ const NoticesPage = () => {
           setHasMore(false);
         }
       })
-      .catch(err => setError(err.message))
+      .catch(error => setError(error.message))
       .finally(() => {
         setIsLoading(false);
-      });    
+      });
   }, [route, searchTitleQwery, pageNumber]);
 
   useEffect(() => {
@@ -87,6 +82,42 @@ const NoticesPage = () => {
 
   const onSearch = searchQuery => {
     setSearchTitleQwery(searchQuery);
+  };
+
+  const addNotice = data => {
+    setIsLoading(true);
+    axios
+      .post(`/notices`, data)
+      .then(result => {
+        if (result.data.category === route || route === 'owner') {
+          console.log('if block');
+          setNotices(prev => [result.data, ...prev]);
+        }
+      })
+      .catch(error => setError(error.message))
+      .finally(() => {
+        console.log(notices);
+        setIsLoading(false);
+      });
+  };
+
+  const deleteNotice = id => {
+    setIsLoading(true);
+    axios
+      .delete(`/notices/${id}`)
+      .then(() => {
+        setNotices(notices.filter(notice => notice._id !== id));
+      })
+      .catch(error => setError(error.message))
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
+  const updateFavorite = _id => {
+    if (route !== 'favorite') return;
+    const newFavoriteNotices = notices.filter(notice => notice._id !== _id);
+    setNotices(newFavoriteNotices);
   };
 
   return (
@@ -104,13 +135,16 @@ const NoticesPage = () => {
               route={route}
               data={notices}
               reference={ref}
-              hasMore={hasMore}
+              deleteNotice={deleteNotice}
+              updateFavorite={updateFavorite}
             />
           ) : (
             !isLoading && <Notification message={NOT_FOUND} />
           )}
         </>
-        {isModalOpen && isAuth && <ModalAddNotice onClose={closeModal} />}
+        {isModalOpen && isAuth && (
+          <ModalAddNotice onClose={closeModal} addNotice={addNotice} />
+        )}
         {isModalOpen && !isAuth && (
           <WarningMessage
             onClose={closeModal}

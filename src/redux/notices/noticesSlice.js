@@ -47,7 +47,12 @@ const noticesSlice = createSlice({
       // додавання оголошень відповідно до обраної категорії
       .addCase(addNotice.pending, handlePending)
       .addCase(addNotice.fulfilled, (state, { payload }) => {
-        state.notices.push(payload);
+        if (
+          state.notices[0].category === payload.route ||
+          payload.route === 'owner'
+        ) {
+          state.notices.unshift(payload.data);
+        }
         state.notifyNotices = 'Notice was successfully added!';
         state.isLoading = false;
       })

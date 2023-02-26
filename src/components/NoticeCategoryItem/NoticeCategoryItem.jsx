@@ -42,7 +42,13 @@ import {
   CATEGORIES_NOTICES,
 } from '../../helpers/constants';
 
-export const NoticeCategoryItem = ({ data, route, reference }) => {
+export const NoticeCategoryItem = ({
+  data,
+  route,
+  reference,
+  deleteNotice,
+  updateFavorite,
+}) => {
   const {
     _id,
     title,
@@ -72,17 +78,11 @@ export const NoticeCategoryItem = ({ data, route, reference }) => {
 
   const onChangeFavorite = () => {
     if (isAuth) {
+      updateFavorite(_id);
       dispatch(updateFavoriteNotice({ noticeId: _id }));
-      if (route === 'favorite') {
-        dispatch(changeFavotitesNotices(_id));
-      }
     } else {
       setIsShownAlert(true);
     }
-  };
-
-  const deletePet = () => {
-    dispatch(deleteNotice({ noticeId: _id }));
   };
 
   const closeModal = () => {
@@ -194,7 +194,8 @@ export const NoticeCategoryItem = ({ data, route, reference }) => {
           onClose={closeConfirmationDelete}
           type="approve"
           text={CONFIRMATION_DELETE}
-          approveFunk={deletePet}
+          id={_id}
+          deleteNotice={deleteNotice}
         />
       )}
     </>

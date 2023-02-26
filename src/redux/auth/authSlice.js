@@ -41,6 +41,7 @@ const stateReset = state => {
   state.token = null;
   state.isLoading = false;
   state.isAuth = false;
+  state.isFetchingCurrentUser = false;
   state.user = {
     name: '',
     email: '',
@@ -51,7 +52,6 @@ const stateReset = state => {
     pets: [],
     favoriteNotices: [],
   };
-  state.isFetchingCurrentUser = false;
 };
 
 const handlePending = state => {
