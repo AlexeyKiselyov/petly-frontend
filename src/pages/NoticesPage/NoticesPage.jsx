@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
+import { useInView } from 'react-intersection-observer';
+
 import { selectIsAuth } from '../../redux/auth/authSelectors';
 
 import { SectionTitle } from '../../components/CommonComponents/SectionTitle/SectionTitle';
@@ -18,24 +20,26 @@ import { Notification } from '../../components/Notification/Notification';
 import { Loader } from '../../components/Loader/Loader';
 
 import { NOT_FOUND } from '../../helpers/constants';
+import {
+  deleteNotice,
+  getNotices,
+  postNotice,
+} from '../../serveсes/fetchNotices';
 
 import { MenuWrap } from './NoticesPage.styled';
 
-import axios from 'axios';
-import { useInView } from 'react-intersection-observer';
-import { deleteNotice, postNotice } from '../../serveсes/fetchNotices';
+// ========================NoticesPage===========================
 
-// ================================================================
 const NoticesPage = () => {
   const { route } = useParams();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const [searchTitleQwery, setSearchTitleQwery] = useState('');
-  const [pageNumber, setPageNumber] = useState(1);
-  const [notices, setNotices] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const [notices, setNotices] = useState([]);
+  const [searchTitleQwery, setSearchTitleQwery] = useState('');
+  const [pageNumber, setPageNumber] = useState(1);
 
   const isAuth = useSelector(selectIsAuth);
 
@@ -52,20 +56,14 @@ const NoticesPage = () => {
   }, [route, searchTitleQwery]);
 
   useEffect(() => {
-    setError(false);
-    setIsLoading(true);
-    axios(
-      `/notices/${route}?page=${pageNumber}&limit=${8}&qwery=${searchTitleQwery}`
-    )
-      .then(res => {
-        setNotices(prev => {
-          return [...prev, ...res.data.notices];
-        });
-      })
-      .catch(error => setError(error.message))
-      .finally(() => {
-        setIsLoading(false);
-      });
+    getNotices(
+      route,
+      pageNumber,
+      searchTitleQwery,
+      setError,
+      setIsLoading,
+      setNotices
+    );    
   }, [route, searchTitleQwery, pageNumber]);
 
   useEffect(() => {
