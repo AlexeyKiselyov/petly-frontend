@@ -23,6 +23,7 @@ import { MenuWrap } from './NoticesPage.styled';
 
 import axios from 'axios';
 import { useInView } from 'react-intersection-observer';
+import { deleteNotice, postNotice } from '../../serveсes/fetchNotices';
 
 // ================================================================
 const NoticesPage = () => {
@@ -31,7 +32,6 @@ const NoticesPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [searchTitleQwery, setSearchTitleQwery] = useState('');
-  const [hasMore, setHasMore] = useState(true);
   const [pageNumber, setPageNumber] = useState(1);
   const [notices, setNotices] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -46,9 +46,9 @@ const NoticesPage = () => {
   });
 
   useEffect(() => {
+    setError(false);
     setNotices([]);
     setPageNumber(1);
-    setHasMore(true);
   }, [route, searchTitleQwery]);
 
   useEffect(() => {
@@ -61,9 +61,6 @@ const NoticesPage = () => {
         setNotices(prev => {
           return [...prev, ...res.data.notices];
         });
-        if (res.data.totalPages === pageNumber) {
-          setHasMore(false);
-        }
       })
       .catch(error => setError(error.message))
       .finally(() => {
@@ -84,34 +81,12 @@ const NoticesPage = () => {
     setSearchTitleQwery(searchQuery);
   };
 
-  const addNotice = data => {
-    setIsLoading(true);
-    axios
-      .post(`/notices`, data)
-      .then(result => {
-        if (result.data.category === route || route === 'owner') {
-          console.log('if block');
-          setNotices(prev => [result.data, ...prev]);
-        }
-      })
-      .catch(error => setError(error.message))
-      .finally(() => {
-        console.log(notices);
-        setIsLoading(false);
-      });
+  const onAddNotice = data => {
+    postNotice(data, route, setError, setIsLoading, setNotices);
   };
 
-  const deleteNotice = id => {
-    setIsLoading(true);
-    axios
-      .delete(`/notices/${id}`)
-      .then(() => {
-        setNotices(notices.filter(notice => notice._id !== id));
-      })
-      .catch(error => setError(error.message))
-      .finally(() => {
-        setIsLoading(false);
-      });
+  const onDeleteNotice = id => {
+    deleteNotice(id, notices, setError, setIsLoading, setNotices);
   };
 
   const updateFavorite = _id => {
@@ -119,18 +94,6 @@ const NoticesPage = () => {
     const newFavoriteNotices = notices.filter(notice => notice._id !== _id);
     setNotices(newFavoriteNotices);
   };
-
-  // const getOneNotice = _id => {
-  //   setIsLoading(true);
-  //   axios(`/notices/notice/${_id}`)
-  //     .then(result => {
-  //       setOneNotice(result.data);
-  //     })
-  //     .catch(error => setError(error.message))
-  //     .finally(() => {
-  //       setIsLoading(false);
-  //     });
-  // };
 
   return (
     <Section>
@@ -146,15 +109,15 @@ const NoticesPage = () => {
             <NoticesCategoriesList
               data={notices}
               reference={ref}
-              deleteNotice={deleteNotice}
-              updateFavorite={updateFavorite}             
+              deleteNotice={onDeleteNotice}
+              updateFavorite={updateFavorite}
             />
           ) : (
             !isLoading && <Notification message={NOT_FOUND} />
           )}
         </>
         {isModalOpen && isAuth && (
-          <ModalAddNotice onClose={closeModal} addNotice={addNotice} />
+          <ModalAddNotice onClose={closeModal} addNotice={onAddNotice} />
         )}
         {isModalOpen && !isAuth && (
           <WarningMessage
