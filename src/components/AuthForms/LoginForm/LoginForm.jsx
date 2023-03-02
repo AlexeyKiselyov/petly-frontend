@@ -16,6 +16,7 @@ import {
   ErrorText,
   Label,
   Icon,
+  GoogleLogin,
 } from '../Forms.styled';
 import { LoginBtn } from '../../CommonButtons/LoginBtn/LoginBtn';
 import { Container } from '../../CommonComponents/Container/Container';
@@ -31,6 +32,7 @@ export const FormError = ({ name }) => {
 };
 
 export const LoginForm = () => {
+  const { REACT_APP_API_URL } = process.env;
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [passwordShown, setPasswordShown] = useState(false);
@@ -103,6 +105,9 @@ export const LoginForm = () => {
           <span>Don't have an account? </span>
           <FormLink to="/register">Register</FormLink>
         </Paragraph>
+        <GoogleLogin href={`${REACT_APP_API_URL}/auth/google`}>
+          Login with  <span> Google</span>
+        </GoogleLogin>
       </Wrapper>
     </Container>
   );

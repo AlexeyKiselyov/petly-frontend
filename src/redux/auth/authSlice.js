@@ -104,8 +104,11 @@ const authSlice = createSlice({
         state.isFetchingCurrentUser = true;
       })
       .addCase(fetchCurrentUser.fulfilled, (state, { payload }) => {
-        state.user = payload;
+        state.user = payload.data;
         state.isAuth = true;
+        if (payload.googleToken) {
+          state.token = payload.googleToken;
+        }
 
         state.isLoading = false;
         state.isFetchingCurrentUser = false;

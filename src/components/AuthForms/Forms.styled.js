@@ -162,6 +162,23 @@ export const Paragraph = styled.p`
     color: rgba(17, 17, 17, 0.6);
   }
 `;
+export const GoogleLogin = styled.a`
+  margin-top: 10px;
+  text-align: center;
+  display: block;
+  font-family: 'Manrope';
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  color: rgba(17, 17, 17, 0.6);
+
+  & span {    
+    text-decoration-line: underline;
+    font-size: 12px;
+    color: #3091eb;
+  }
+`;
 
 export const FormLink = styled(Link)`
   font-family: 'Manrope';

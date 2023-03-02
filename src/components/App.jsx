@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
 import { useEffect, lazy } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -29,10 +29,12 @@ export const App = () => {
   const isLoading = useSelector(selectIsLoading);
 
   const dispatch = useDispatch();
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get('token');
 
   useEffect(() => {
-    dispatch(fetchCurrentUser());
-  }, [dispatch]);
+    dispatch(fetchCurrentUser({ token }));
+  }, [dispatch, token]);
 
   return (
     <>

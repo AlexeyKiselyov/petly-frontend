@@ -71,15 +71,15 @@ export const logout = createAsyncThunk(
 
 export const fetchCurrentUser = createAsyncThunk(
   'auth/refresh',
-  async (_, { rejectWithValue, getState }) => {
+  async ({ token: googleToken }, { rejectWithValue, getState }) => {
     const tokenCurrent = getState().auth.token;
-    if (!tokenCurrent) {
+    if (!tokenCurrent && !googleToken) {
       return rejectWithValue();
     }
-    token.set(tokenCurrent);
+    googleToken ? token.set(googleToken) : token.set(tokenCurrent);
     try {
       const { data } = await axios('/users/current');
-      return data;
+      return { data, googleToken };
     } catch (error) {
       token.unset();
       return rejectWithValue(error.message);
