@@ -16,11 +16,11 @@ import {
   ErrorText,
   Label,
   Icon,
-  GoogleLogin,
 } from '../Forms.styled';
 import { LoginBtn } from '../../CommonButtons/LoginBtn/LoginBtn';
 import { Container } from '../../CommonComponents/Container/Container';
 import { emailRegexp, passwordRegexp } from '../RegisterForm/RegisterForm';
+import { GoogleAuthBtn } from '../../CommonButtons/GoogleAuthBtn/GoogleAuthBtn';
 
 export const FormError = ({ name }) => {
   return (
@@ -32,7 +32,6 @@ export const FormError = ({ name }) => {
 };
 
 export const LoginForm = () => {
-  const { REACT_APP_API_URL } = process.env;
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [passwordShown, setPasswordShown] = useState(false);
@@ -100,14 +99,12 @@ export const LoginForm = () => {
             </FormCustom>
           )}
         </Formik>
+        <GoogleAuthBtn text={'Sign in with Google'}/>
 
         <Paragraph>
           <span>Don't have an account? </span>
           <FormLink to="/register">Register</FormLink>
-        </Paragraph>
-        <GoogleLogin href={`${REACT_APP_API_URL}/auth/google`}>
-          Login with  <span> Google</span>
-        </GoogleLogin>
+        </Paragraph>        
       </Wrapper>
     </Container>
   );

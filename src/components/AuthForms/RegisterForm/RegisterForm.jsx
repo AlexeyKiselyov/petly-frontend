@@ -15,6 +15,7 @@ import {
 } from '../Forms.styled';
 import { StepOne } from './StepOne/StepOne';
 import { StepTwo } from './StepTwo/StepTwo';
+import { GoogleAuthBtn } from '../../CommonButtons/GoogleAuthBtn/GoogleAuthBtn';
 
 export const passwordRegexp = /^[A-Za-z0-9!?#$%^&_\-*]{7,32}$/;
 export const nameRegexp = /^[a-zA-Z]{2,20}$/;
@@ -136,6 +137,7 @@ export const RegisterForm = () => {
                   </>
                 )}
               </FormCustom>
+              <GoogleAuthBtn text={'Sign up with Google'}/>
               <Paragraph>
                 <span>Already have an account? </span>
                 <FormLink to="/login">Login</FormLink>
